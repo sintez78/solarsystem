@@ -18,9 +18,15 @@ def calculate_force(body, space_objects):
     for obj in space_objects:
         if body == obj:
             continue  # тело не действует гравитационной силой на само себя!
-        r = ((body.x - obj.x)**2 + (body.y - obj.y)**2)**0.5
-        body.Fx += 1  # FIXME: нужно вывести формулу...
-        body.Fy += 2  # FIXME: нужно вывести формулу...
+        dx = obj.x - body.x
+        dy = obj.y - body.y
+        r = (dx**2 + dy**2)**0.5
+        
+        # Закон всемирного тяготения: F = G * m1 * m2 / r^2
+        if r > 0:  # избегаем деления на ноль
+            F = gravitational_constant * body.m * obj.m / (r**2)
+            body.Fx += F * dx / r
+            body.Fy += F * dy / r
 
 
 def move_space_object(body, dt):
@@ -31,10 +37,16 @@ def move_space_object(body, dt):
     **body** — тело, которое нужно переместить.
     """
 
-    ax = body.Fx/body.m
-    body.x += 42  # FIXME: не понимаю как менять...
-    body.Vx += ax*dt
-    # FIXME: not done recalculation of y coordinate!
+    ax = body.Fx / body.m
+    ay = body.Fy / body.m
+    
+    # Обновляем скорость: v = v0 + a * dt
+    body.vx += ax * dt
+    body.vy += ay * dt
+    
+    # Обновляем положение: x = x0 + v * dt
+    body.x += body.vx * dt
+    body.y += body.vy * dt
 
 
 def recalculate_space_objects_positions(space_objects, dt):
@@ -53,4 +65,4 @@ def recalculate_space_objects_positions(space_objects, dt):
 
 
 if __name__ == "__main__":
-    print("This module is not for direct call!")
+    print("This module is not for direct call!"))

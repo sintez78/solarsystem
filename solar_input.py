@@ -19,10 +19,14 @@ def read_space_objects_data_from_file(input_filename):
             if len(line.strip()) == 0 or line[0] == '#':
                 continue  # пустые строки и строки-комментарии пропускаем
             object_type = line.split()[0].lower()
-            if object_type == "star":  # FIXME: do the same for planet
+            if object_type == "star":
                 star = Star()
                 parse_star_parameters(line, star)
                 objects.append(star)
+            elif object_type == "planet":  # добавлена обработка планет
+                planet = Planet()
+                parse_planet_parameters(line, planet)
+                objects.append(planet)
             else:
                 print("Unknown space object")
 
@@ -43,8 +47,16 @@ def parse_star_parameters(line, star):
     **line** — строка с описание звезды.
     **star** — объект звезды.
     """
+    parts = line.strip().split()
+    if len(parts) >= 8:
+        star.R = float(parts[1])      # радиус в пикселах
+        star.color = parts[2]          # цвет
+        star.m = float(parts[3])       # масса
+        star.x = float(parts[4])       # координата x
+        star.y = float(parts[5])       # координата y
+        star.vx = float(parts[6])      # скорость по x
+        star.vy = float(parts[7])      # скорость по y
 
-    pass  # FIXME: not done yet
 
 def parse_planet_parameters(line, planet):
     """Считывает данные о планете из строки.
@@ -61,7 +73,15 @@ def parse_planet_parameters(line, planet):
     **line** — строка с описание планеты.
     **planet** — объект планеты.
     """
-    pass  # FIXME: not done yet...
+    parts = line.strip().split()
+    if len(parts) >= 8:
+        planet.R = float(parts[1])      # радиус в пикселах
+        planet.color = parts[2]          # цвет
+        planet.m = float(parts[3])       # масса
+        planet.x = float(parts[4])       # координата x
+        planet.y = float(parts[5])       # координата y
+        planet.vx = float(parts[6])      # скорость по x
+        planet.vy = float(parts[7])      # скорость по y
 
 
 def write_space_objects_data_to_file(output_filename, space_objects):
@@ -77,10 +97,14 @@ def write_space_objects_data_to_file(output_filename, space_objects):
     """
     with open(output_filename, 'w') as out_file:
         for obj in space_objects:
-            print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))
-            # FIXME: should store real values
+            if isinstance(obj, Star):
+                obj_type = "Star"
+            elif isinstance(obj, Planet):
+                obj_type = "Planet"
+            else:
+                continue  # пропускаем неизвестные объекты
+            out_file.write(f"{obj_type} {obj.R} {obj.color} {obj.m} {obj.x} {obj.y} {obj.vx} {obj.vy}\n")
 
-# FIXME: хорошо бы ещё сделать функцию, сохранающую статистику в заданный файл...
 
 if __name__ == "__main__":
     print("This module is not for direct call!")
